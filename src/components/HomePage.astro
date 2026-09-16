@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from './Hero.astro';
+import Projects from './Projects.astro';
+import About from './About.astro';
+import Studio from './Studio.astro';
+import Contact from './Contact.astro';
+import { getProjects } from '@/lib/projects';
+import type { Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const projects = await getProjects(lang);
+---
+
+<BaseLayout lang={lang} alternate={{ pt: '/', en: '/en/' }}>
+  <Hero lang={lang} />
+  <Projects lang={lang} projects={projects} />
+  <About lang={lang} />
+  <Studio lang={lang} />
+  <Contact lang={lang} />
+</BaseLayout>

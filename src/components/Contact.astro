@@ -1,0 +1,147 @@
+---
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { profile } from '@/data/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const cv = lang === 'pt' ? profile.links.cvPt : profile.links.cvEn;
+
+const links = [
+  { label: 'GitHub', href: profile.links.github },
+  { label: 'LinkedIn', href: profile.links.linkedin },
+  { label: 'Instagram', href: profile.links.instagram },
+  { label: lang === 'pt' ? 'Currículo' : 'Résumé', href: cv },
+].filter((l) => l.href);
+---
+
+<section class="contact on-paper" id="contato" aria-labelledby="contato-title">
+  <div class="container">
+    <p class="label">{t('contact.label')}</p>
+    <h2 class="display contact__title" id="contato-title">{t('contact.title')}</h2>
+    <p class="contact__lead">{t('contact.lead')}</p>
+
+    <div class="contact__mail">
+      <a class="contact__email" href={`mailto:${profile.email}`}>{profile.email}</a>
+      <div class="contact__actions">
+        <a class="btn btn--solid" href={`mailto:${profile.email}`}>
+          {t('contact.write')} <span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <button
+          class="btn btn--ghost"
+          type="button"
+          data-copy={profile.email}
+          data-copied={t('contact.copied')}
+        >
+          {t('contact.copy')}
+        </button>
+      </div>
+      <p class="visually-hidden" role="status" data-copy-status></p>
+    </div>
+
+    <ul class="contact__links" role="list">
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.href} rel="noopener me" target={l.href.startsWith('http') ? '_blank' : undefined}>
+              {l.label} <span class="arrow" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  btn?.addEventListener('click', async () => {
+    const original = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+      btn.textContent = btn.dataset.copied ?? '';
+      if (status) status.textContent = btn.dataset.copied ?? '';
+      setTimeout(() => (btn.textContent = original), 2200);
+    } catch {
+      // Sem permissão de área de transferência: o link mailto continua disponível.
+    }
+  });
+</script>
+
+<style>
+  .contact {
+    padding-block: clamp(4rem, 9vw, 7.5rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .contact__title {
+    margin-top: 1rem;
+    font-size: clamp(2.75rem, 0.8rem + 7.2vw, 7rem);
+  }
+
+  .contact__lead {
+    max-width: 44ch;
+    margin-top: 1.25rem;
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .contact__mail {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: clamp(2rem, 5vw, 3.5rem);
+    padding-block: 1.75rem;
+    border-block: 2px solid var(--ink);
+  }
+
+  .contact__email {
+    font-size: clamp(1.25rem, 0.7rem + 2.6vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .contact__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 1.5rem 0 0;
+  }
+
+  .contact__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: var(--step--1);
+    text-underline-offset: 5px;
+  }
+
+  @media (min-width: 900px) {
+    .contact__mail {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .contact__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>

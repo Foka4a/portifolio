@@ -1,0 +1,361 @@
+---
+import { languages, type Lang } from '@/i18n/ui';
+import { routes, useTranslations } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  alternate: { pt: string; en: string };
+}
+
+const { lang, alternate } = Astro.props;
+const t = useTranslations(lang);
+const home = routes.home(lang);
+
+// Os ids batem com as seções da home — rótulo e destino sempre iguais.
+const nav = [
+  { id: 'projetos', label: t('nav.projects') },
+  { id: 'sobre', label: t('nav.about') },
+  { id: 'estudio', label: t('nav.studio') },
+  { id: 'contato', label: t('nav.contact') },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href={home} aria-label="Gabriel Somariva — início">
+      <span>Gabriel Somariva</span>
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label="Principal" data-nav>
+      <ul role="list">
+        {
+          nav.map((item, i) => (
+            <li>
+              <a href={`${home}#${item.id}`} data-nav-link={item.id}>
+                <span class="site-nav__num" aria-hidden="true">
+                  0{i + 1}
+                </span>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__tools">
+      <ul class="lang" role="list" aria-label={t('nav.lang')}>
+        {
+          (Object.keys(languages) as Lang[]).map((code) => (
+            <li>
+              <a
+                href={alternate[code]}
+                hreflang={code === 'pt' ? 'pt-BR' : 'en'}
+                aria-current={code === lang ? 'true' : undefined}
+                lang={code === 'pt' ? 'pt-BR' : 'en'}
+              >
+                {languages[code]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <button
+        class="menu-btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        data-menu-btn
+        data-label-open={t('nav.menu')}
+        data-label-close={t('nav.close')}
+      >
+        <span class="visually-hidden" data-menu-label>{t('nav.menu')}</span>
+        <span class="menu-btn__bars" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const label = document.querySelector<HTMLElement>('[data-menu-label]');
+
+  function setOpen(open: boolean) {
+    if (!btn || !nav) return;
+    btn.setAttribute('aria-expanded', String(open));
+    nav.classList.toggle('is-open', open);
+    document.body.classList.toggle('menu-open', open);
+    if (label) label.textContent = (open ? btn.dataset.labelClose : btn.dataset.labelOpen) ?? '';
+  }
+
+  btn?.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  nav?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && btn?.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      btn.focus();
+    }
+  });
+  window.matchMedia('(min-width: 900px)').addEventListener('change', () => setOpen(false));
+
+  // Destaca no menu a seção visível
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
+  const sections = [...links]
+    .map((a) => document.getElementById(a.dataset.navLink ?? ''))
+    .filter((s): s is HTMLElement => Boolean(s));
+
+  if (sections.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          links.forEach((a) =>
+            a.toggleAttribute('aria-current', a.dataset.navLink === entry.target.id),
+          );
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px' },
+    );
+    sections.forEach((s) => io.observe(s));
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-on-paper);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: var(--header-h);
+  }
+
+  .brand {
+    font-weight: 900;
+    font-variation-settings: 'wdth' 112;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .site-nav ul {
+    display: flex;
+    gap: 1.75rem;
+    margin: 0;
+  }
+
+  .site-nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .site-nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease);
+  }
+
+  .site-nav a:hover::after,
+  .site-nav a[aria-current]::after {
+    transform: scaleX(1);
+  }
+
+  .site-nav__num {
+    display: none;
+  }
+
+  .site-header__tools {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .lang {
+    display: flex;
+    margin: 0;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line-on-paper);
+  }
+
+  .lang a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    color: var(--muted-on-paper);
+  }
+
+  .lang a[aria-current] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+
+  .menu-btn {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    place-items: center;
+  }
+
+  .menu-btn__bars,
+  .menu-btn__bars::before {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: currentColor;
+    transition: transform 0.25s var(--ease);
+  }
+
+  .menu-btn__bars {
+    position: relative;
+    transform: translateY(-4px);
+  }
+
+  .menu-btn__bars::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+  }
+
+  .menu-btn[aria-expanded='true'] .menu-btn__bars {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  .menu-btn[aria-expanded='true'] .menu-btn__bars::before {
+    transform: translateY(-8px) rotate(-90deg);
+  }
+
+  @media (max-width: 899px) {
+    .menu-btn {
+      display: grid;
+      position: relative;
+      z-index: 2;
+    }
+
+    .lang {
+      position: relative;
+      z-index: 2;
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .site-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      padding: calc(var(--header-h) + 2rem) var(--gutter) 3rem;
+      background: var(--ink);
+      color: var(--paper);
+      visibility: hidden;
+      opacity: 0;
+      transition:
+        opacity 0.25s var(--ease),
+        visibility 0s linear 0.25s;
+    }
+
+    .site-nav.is-open {
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 0.25s var(--ease);
+    }
+
+    .site-nav ul {
+      flex-direction: column;
+      gap: 0.25rem;
+      width: 100%;
+    }
+
+    .site-nav a {
+      gap: 1rem;
+      width: 100%;
+      padding-block: 0.5rem;
+      border-bottom: 1px solid var(--line-on-ink);
+      font-size: var(--step-2);
+      font-weight: 900;
+      font-variation-settings: 'wdth' 112;
+      letter-spacing: -0.01em;
+    }
+
+    .site-nav a::after {
+      display: none;
+    }
+
+    .site-nav__num {
+      display: inline;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--muted-on-ink);
+    }
+
+    :global(body.menu-open) {
+      overflow: hidden;
+    }
+
+    /* backdrop-filter cria um novo bloco de contenção para position:fixed —
+       desligamos com o menu aberto para o painel ocupar a tela toda. */
+    :global(body.menu-open) .site-header {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: var(--ink);
+      border-color: var(--line-on-ink);
+    }
+
+    .brand {
+      position: relative;
+      z-index: 2;
+    }
+
+    :global(body.menu-open) .brand,
+    :global(body.menu-open) .site-header__tools {
+      color: var(--paper);
+    }
+
+    :global(body.menu-open) .lang a {
+      color: var(--muted-on-ink);
+    }
+
+    :global(body.menu-open) .lang a[aria-current] {
+      color: var(--paper);
+    }
+  }
+</style>

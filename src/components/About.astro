@@ -1,0 +1,113 @@
+---
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { profile, timeline } from '@/data/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const cv = lang === 'pt' ? profile.links.cvPt : profile.links.cvEn;
+---
+
+<section class="about on-paper" id="sobre" aria-labelledby="sobre-title">
+  <div class="container about__grid">
+    <div class="about__main" data-reveal>
+      <p class="label">{t('about.label')}</p>
+      <h2 class="display about__title" id="sobre-title">{t('about.title')}</h2>
+      <p class="about__lead">{t('about.p1')}</p>
+      <p class="muted">{t('about.p2')}</p>
+      {
+        cv && (
+          <a class="btn btn--solid" href={cv} download>
+            {t('about.cv')} <span class="arrow" aria-hidden="true">↓</span>
+          </a>
+        )
+      }
+    </div>
+
+    <div class="about__side" data-reveal>
+      <h3 class="label">{t('about.timeline')}</h3>
+      <ol class="timeline" role="list">
+        {
+          timeline.map((item) => (
+            <li>
+              <span class="timeline__period mono">{item.period[lang]}</span>
+              <span class="timeline__title">{item.title[lang]}</span>
+              <span class="timeline__detail muted">{item.detail[lang]}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .about__grid {
+    display: grid;
+    gap: 3rem;
+  }
+
+  .about__main {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    max-width: 44rem;
+  }
+
+  .about__title {
+    font-size: var(--step-2);
+    line-height: 0.95;
+  }
+
+  .about__lead {
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .about__side {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+
+  .timeline {
+    margin: 0;
+    border-top: 2px solid var(--ink);
+  }
+
+  .timeline li {
+    display: grid;
+    gap: 0.15rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--line-on-paper);
+  }
+
+  .timeline__period {
+    color: var(--muted-on-paper);
+    font-size: 0.8125rem;
+  }
+
+  .timeline__title {
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+
+  .timeline__detail {
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 900px) {
+    .about__grid {
+      grid-template-columns: 1.3fr 1fr;
+      gap: 5rem;
+    }
+  }
+</style>

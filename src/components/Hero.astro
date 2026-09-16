@@ -1,0 +1,184 @@
+---
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { proof } from '@/data/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__top on-paper">
+    <div class="container">
+      <p class="label hero__eyebrow">{t('hero.eyebrow')}</p>
+    </div>
+  </div>
+
+  <!-- Um único h1; cada linha carrega o próprio fundo, e o corte fica ENTRE as linhas -->
+  <h1 id="hero-title" class="display hero__title">
+    <span class="hero__line hero__line--paper"><span class="container">{t('hero.line1')}</span></span>
+    <span class="hero__line hero__line--ink"><span class="container">{t('hero.line2')}</span></span>
+  </h1>
+
+  <div class="hero__bottom on-ink">
+    <div class="container">
+      <div class="hero__grid">
+        <p class="hero__lead">{t('hero.lead')}</p>
+        <div class="hero__side">
+          <p class="label">{t('hero.motto')}</p>
+          <div class="hero__cta">
+            <a class="btn btn--solid" href="#projetos">
+              {t('hero.cta.primary')} <span class="arrow" aria-hidden="true">↓</span>
+            </a>
+            <a class="btn btn--ghost" href="#contato">{t('hero.cta.secondary')}</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="proof" aria-label={t('proof.label')}>
+        <ul role="list">
+          {
+            proof.map((item) => (
+              <li data-reveal>
+                <span class="proof__value display">{item.value}</span>
+                <span class="proof__label">{item.label[lang]}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    overflow-x: clip;
+  }
+
+  .hero__top {
+    padding-top: clamp(2.5rem, 7vw, 5.5rem);
+  }
+
+  .hero__eyebrow {
+    margin-bottom: 1.25rem;
+  }
+
+  .hero__title {
+    font-size: clamp(3rem, 0.6rem + 8.4vw, 7.75rem);
+  }
+
+  .hero__line {
+    display: block;
+    padding-block: 0.04em;
+  }
+
+  .hero__line > .container {
+    display: block;
+  }
+
+  .hero__line--paper {
+    background: var(--paper);
+    color: var(--ink);
+    padding-bottom: 0.08em;
+  }
+
+  .hero__line--ink {
+    background: var(--ink);
+    color: var(--paper);
+    padding-top: 0.12em;
+  }
+
+  .hero__bottom {
+    padding-block: clamp(2rem, 4vw, 3.5rem) 0;
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .hero__lead {
+    max-width: 38ch;
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .hero__side {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .proof {
+    margin-top: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .proof ul {
+    display: grid;
+    margin: 0;
+  }
+
+  .proof li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--line-on-ink);
+  }
+
+  .proof__value {
+    font-size: var(--step-3);
+    line-height: 1;
+  }
+
+  .proof__label {
+    max-width: 28ch;
+    color: var(--muted-on-ink);
+    font-size: var(--step--1);
+    line-height: 1.45;
+  }
+
+  @media (min-width: 900px) {
+    .hero__grid {
+      grid-template-columns: 1.2fr 1fr;
+      gap: 4rem;
+    }
+
+    .hero__cta .btn {
+      min-width: 12rem;
+    }
+
+    .proof ul {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .proof li {
+      padding-inline: 0 2rem;
+      border-bottom: 0;
+    }
+
+    .proof li + li {
+      padding-left: 2rem;
+      border-left: 1px solid var(--line-on-ink);
+    }
+  }
+
+  @media (max-width: 899px) {
+    .hero__cta .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>

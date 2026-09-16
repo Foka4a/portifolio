@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" fill="none" font-family="ui-monospace, monospace">
+  <rect width="1200" height="750" fill="#0b0b0b"/>
+  <text x="70" y="96" fill="#f7f6f2" font-size="20" letter-spacing="4">03 / CREATIVESTUDIO</text>
+  <g stroke="#f7f6f2" stroke-width="2" opacity=".55">
+    <path d="M600 390 L300 220 M600 390 L300 560 M600 390 L900 220 M600 390 L900 560 M600 390 L600 170"/>
+    <path d="M900 220 L1060 160 M900 220 L1060 280 M900 560 L1060 500 M900 560 L1060 620 M300 220 L150 300 M300 560 L150 480" stroke-dasharray="4 8"/>
+  </g>
+  <rect x="490" y="330" width="220" height="120" rx="10" fill="#f7f6f2"/>
+  <text x="600" y="380" fill="#0b0b0b" font-size="18" text-anchor="middle" letter-spacing="3">ACERVO</text>
+  <text x="600" y="412" fill="#0b0b0b" font-size="14" text-anchor="middle" letter-spacing="2" opacity=".7">SOMENTE LEITURA</text>
+  <g fill="#0b0b0b" stroke="#f7f6f2" stroke-width="3">
+    <circle cx="300" cy="220" r="46"/><circle cx="300" cy="560" r="46"/><circle cx="900" cy="220" r="46"/><circle cx="900" cy="560" r="46"/><circle cx="600" cy="170" r="46"/>
+  </g>
+  <g fill="#f7f6f2" font-size="14" text-anchor="middle" letter-spacing="2">
+    <text x="300" y="225">MUNDO</text><text x="300" y="565">NPCS</text><text x="900" y="225">ENREDO</text><text x="900" y="565">REGRAS</text><text x="600" y="175">MESTRE</text>
+  </g>
+  <g fill="#f7f6f2"><circle cx="1060" cy="160" r="8"/><circle cx="1060" cy="280" r="8"/><circle cx="1060" cy="500" r="8"/><circle cx="1060" cy="620" r="8"/><circle cx="150" cy="300" r="8"/><circle cx="150" cy="480" r="8"/></g>
+  <text x="70" y="700" fill="#f7f6f2" font-size="14" letter-spacing="3" opacity=".6">CAPA PROVISÓRIA — SUBSTITUIR POR SCREENSHOT</text>
+</svg>

@@ -1,0 +1,173 @@
+---
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { pad, type Project } from '@/lib/projects';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  lang: Lang;
+  projects: Project[];
+}
+
+const { lang, projects } = Astro.props;
+const t = useTranslations(lang);
+const first = projects.find((p) => p.data.featured) ?? projects[0];
+---
+
+<section class="projects on-ink" id="projetos" aria-labelledby="projetos-title" data-projects>
+  <div class="container">
+    <header class="projects__head">
+      <h2 class="display h2" id="projetos-title">{t('projects.title')}</h2>
+      <p class="label projects__status" aria-live="polite">
+        {t('projects.selected')} — <span data-status>{first ? `${pad(first.data.order)} / ${first.data.title}` : ''}</span>
+      </p>
+    </header>
+
+    <nav class="index" aria-label={t('projects.index')}>
+      <ol role="list">
+        {
+          projects.map((p) => {
+            const num = pad(p.data.order);
+            return (
+              <li>
+                <a
+                  href={`#projeto-${num}`}
+                  data-index={num}
+                  aria-current={p === first ? 'true' : undefined}
+                  title={p.data.title}
+                >
+                  {num}
+                  <span class="visually-hidden">— {p.data.title}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </nav>
+
+    <div class="projects__grid">
+      {projects.map((p) => <ProjectCard lang={lang} project={p} active={p === first} />)}
+    </div>
+  </div>
+</section>
+
+<script>
+  /**
+   * Índice 01–04: ao clicar, rola até o projeto e inverte a polaridade dele.
+   * Ao rolar pela lista, o índice acompanha o projeto mais visível.
+   */
+  const root = document.querySelector<HTMLElement>('[data-projects]');
+  if (root) {
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-project]')];
+    const pills = [...root.querySelectorAll<HTMLAnchorElement>('[data-index]')];
+    const status = root.querySelector<HTMLElement>('[data-status]');
+
+    const select = (num: string) => {
+      cards.forEach((c) => c.toggleAttribute('data-active', c.dataset.project === num));
+      pills.forEach((p) =>
+        p.dataset.index === num ? p.setAttribute('aria-current', 'true') : p.removeAttribute('aria-current'),
+      );
+      const card = cards.find((c) => c.dataset.project === num);
+      if (status && card) status.textContent = `${num} / ${card.dataset.title ?? ''}`;
+    };
+
+    pills.forEach((pill) =>
+      pill.addEventListener('click', () => select(pill.dataset.index ?? '')),
+    );
+
+    // Em telas estreitas (1 coluna) o foco segue a rolagem.
+    const narrow = window.matchMedia('(max-width: 899px)');
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!narrow.matches) return;
+        const visible = entries.filter((e) => e.isIntersecting);
+        const last = visible[visible.length - 1];
+        if (last) select((last.target as HTMLElement).dataset.project ?? '');
+      },
+      { rootMargin: '-40% 0px -55% 0px' },
+    );
+    cards.forEach((c) => io.observe(c));
+  }
+</script>
+
+<style>
+  .projects {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .projects__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line-on-ink);
+  }
+
+  .index {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 5;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: 0.75rem var(--gutter);
+    background: var(--ink);
+  }
+
+  .index ol {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .index a {
+    display: grid;
+    place-items: center;
+    min-width: 56px;
+    min-height: 44px;
+    padding-inline: 0.9rem;
+    border: 1.5px solid var(--line-on-ink);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      background-color 0.2s var(--ease),
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
+  }
+
+  .index a:hover {
+    border-color: var(--paper);
+  }
+
+  .index a[aria-current] {
+    background: var(--paper);
+    border-color: var(--paper);
+    color: var(--ink);
+  }
+
+  .projects__grid {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    margin-top: 1.25rem;
+  }
+
+  @media (max-width: 899px) {
+    .index ol > li {
+      flex: 1;
+    }
+
+    .index a {
+      min-width: 0;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .projects__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

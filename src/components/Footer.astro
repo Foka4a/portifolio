@@ -1,0 +1,53 @@
+---
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { profile } from '@/data/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer on-ink">
+  <div class="container site-footer__inner">
+    <p>© {year} {profile.name}</p>
+    <p class="muted">
+      <a href="https://github.com/Foka4a/portifolio">{t('footer.built')}</a>
+    </p>
+    <a class="to-top" href="#conteudo">{t('footer.top')} <span aria-hidden="true">↑</span></a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem;
+    font-size: var(--step--1);
+  }
+
+  .site-footer a {
+    text-underline-offset: 4px;
+  }
+
+  .to-top {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+</style>

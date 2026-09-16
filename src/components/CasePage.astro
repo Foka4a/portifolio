@@ -1,0 +1,354 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import type { Lang } from '@/i18n/ui';
+import { routes, useTranslations } from '@/i18n/utils';
+import { pad, type Project } from '@/lib/projects';
+
+interface Props {
+  lang: Lang;
+  project: Project;
+  next: Project;
+}
+
+const { lang, project, next } = Astro.props;
+const t = useTranslations(lang);
+const d = project.data;
+const { Content } = await render(project);
+const home = routes.home(lang);
+
+const meta = [
+  { label: t('case.role'), value: d.role },
+  { label: t('case.year'), value: d.year },
+  { label: t('case.status'), value: d.status },
+];
+const groups = [
+  { label: t('projects.stack'), items: d.stack },
+  { label: t('projects.infra'), items: d.infra },
+  { label: t('projects.focus'), items: d.focus },
+].filter((g) => g.items.length);
+const links = [
+  { label: t('case.repo'), href: d.links.repo },
+  { label: t('case.demo'), href: d.links.demo },
+].filter((l): l is { label: string; href: string } => Boolean(l.href));
+---
+
+<BaseLayout
+  lang={lang}
+  title={d.title}
+  description={d.summary}
+  alternate={{ pt: routes.project('pt', d.urlSlug), en: routes.project('en', d.urlSlug) }}
+>
+  <article>
+    <header class="case-head on-ink">
+      <div class="container">
+        <a class="back" href={`${home}#projetos`}>
+          <span class="arrow" aria-hidden="true">←</span> {t('case.back')}
+        </a>
+        <p class="case-head__kicker">
+          <span class="display case-head__num">{pad(d.order)}</span>
+          <span class="label">{d.kind}</span>
+        </p>
+        <h1 class="display case-head__title">{d.title}</h1>
+        <p class="case-head__summary">{d.summary}</p>
+
+        {
+          d.metrics.length > 0 && (
+            <section class="metrics" aria-label={t('case.results')}>
+              <ul role="list">
+                {d.metrics.map((m) => (
+                  <li>
+                    <span class="display metrics__value">{m.value}</span>
+                    <span class="metrics__label">{m.label}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+      </div>
+    </header>
+
+    <div class="case-cover">
+      <div class="container">
+        <figure>
+          <img src={d.cover} alt={d.coverAlt} width="1200" height="750" />
+        </figure>
+      </div>
+    </div>
+
+    <div class="container case-body">
+      <aside class="case-aside" aria-label={t('case.sheet')}>
+        <dl>
+          {
+            meta.map((m) => (
+              <div>
+                <dt>{m.label}</dt>
+                <dd>{m.value}</dd>
+              </div>
+            ))
+          }
+          {
+            groups.map((g) => (
+              <div>
+                <dt>{g.label}</dt>
+                <dd>
+                  <ul class="tags">
+                    {g.items.map((i) => (
+                      <li>{i}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            ))
+          }
+          {
+            links.length > 0 && (
+              <div>
+                <dt>{t('case.links')}</dt>
+                <dd class="case-aside__links">
+                  {links.map((l) => (
+                    <a href={l.href} target="_blank" rel="noopener">
+                      {l.label} <span aria-hidden="true">↗</span>
+                    </a>
+                  ))}
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+      </aside>
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+
+    <nav class="next on-ink" aria-label={t('case.next')}>
+      <a class="container next__link" href={routes.project(lang, next.data.urlSlug)}>
+        <span class="label">{t('case.next')} · {pad(next.data.order)}</span>
+        <span class="display next__title">
+          {next.data.title} <span class="arrow" aria-hidden="true">→</span>
+        </span>
+      </a>
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .case-head {
+    padding-block: clamp(2rem, 5vw, 3.5rem) clamp(5rem, 10vw, 8rem);
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .back:hover .arrow {
+    transform: translateX(-4px);
+  }
+
+  .case-head__kicker {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-top: clamp(2rem, 5vw, 3.5rem);
+  }
+
+  .case-head__num {
+    font-size: var(--step-2);
+    line-height: 1;
+  }
+
+  .case-head__title {
+    margin-top: 0.75rem;
+    font-size: clamp(2.5rem, 0.8rem + 6vw, 6.5rem);
+    overflow-wrap: anywhere;
+  }
+
+  .case-head__summary {
+    max-width: 48ch;
+    margin-top: 1.5rem;
+    color: var(--muted-on-ink);
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .metrics {
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .metrics ul {
+    display: grid;
+    margin: 0;
+  }
+
+  .metrics li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--line-on-ink);
+  }
+
+  .metrics__value {
+    font-size: var(--step-3);
+    line-height: 1;
+  }
+
+  .metrics__label {
+    max-width: 26ch;
+    color: var(--muted-on-ink);
+    font-size: var(--step--1);
+  }
+
+  .case-cover {
+    margin-top: calc(clamp(5rem, 10vw, 8rem) * -1 + 2rem);
+  }
+
+  .case-cover figure {
+    overflow: hidden;
+    border: 1px solid var(--line-on-paper);
+    border-radius: var(--radius);
+    background: var(--paper-2);
+  }
+
+  .case-body {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+
+  .case-aside dl {
+    display: grid;
+    margin: 0;
+    border-top: 2px solid var(--ink);
+  }
+
+  .case-aside dl > div {
+    display: grid;
+    gap: 0.4rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line-on-paper);
+  }
+
+  .case-aside dt {
+    color: var(--muted-on-paper);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .case-aside dd {
+    font-weight: 600;
+  }
+
+  .case-aside__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+  }
+
+  .case-aside__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-underline-offset: 4px;
+  }
+
+  .prose {
+    max-width: 68ch;
+  }
+
+  .prose :global(h2) {
+    margin: 2.75rem 0 1rem;
+    font-size: var(--step-2);
+    font-weight: 900;
+    font-variation-settings: 'wdth' 112;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin-bottom: 1.1rem;
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: 1.2rem;
+  }
+
+  .prose :global(li + li) {
+    margin-top: 0.5rem;
+  }
+
+  .prose :global(li::marker) {
+    content: '— ';
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    padding: 0.1em 0.35em;
+    background: var(--paper-2);
+    border-radius: 4px;
+  }
+
+  .next__link {
+    display: grid;
+    gap: 0.75rem;
+    padding-block: clamp(3rem, 7vw, 5rem);
+    text-decoration: none;
+  }
+
+  .next__title {
+    font-size: clamp(2rem, 0.8rem + 4.6vw, 5rem);
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 700px) {
+    .metrics ul {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .metrics li {
+      padding-inline: 0 1.5rem;
+      border-bottom: 0;
+    }
+
+    .metrics li + li {
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--line-on-ink);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .case-body {
+      grid-template-columns: 18rem 1fr;
+      gap: 5rem;
+    }
+
+    .case-aside {
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+      align-self: start;
+    }
+  }
+</style>

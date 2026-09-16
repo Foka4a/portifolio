@@ -1,0 +1,144 @@
+---
+import type { Lang } from '@/i18n/ui';
+import { useTranslations } from '@/i18n/utils';
+import { profile, services, tech } from '@/data/site';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="studio on-ink" id="estudio" aria-labelledby="estudio-title">
+  <div class="container studio__grid">
+    <div class="studio__main" data-reveal>
+      <p class="label">{t('studio.label')}</p>
+      <h2 class="display studio__title" id="estudio-title">{t('studio.title')}</h2>
+      <p class="studio__text">{t('studio.p')}</p>
+
+      <h3 class="label">{t('studio.services')}</h3>
+      <ul class="services" role="list">
+        {services.map((s, i) => (
+          <li>
+            <span class="mono muted" aria-hidden="true">0{i + 1}</span>
+            {s[lang]}
+          </li>
+        ))}
+      </ul>
+
+      {
+        profile.links.studio && (
+          <a class="btn btn--ghost" href={profile.links.studio} rel="noopener">
+            {t('studio.link')} <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        )
+      }
+    </div>
+
+    <div class="studio__tech" data-reveal>
+      <h3 class="label">{t('tech.label')}</h3>
+      <dl class="tech">
+        {
+          tech.map((g) => (
+            <div>
+              <dt>{g.group[lang]}</dt>
+              <dd>{g.items.join(' · ')}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .studio {
+    padding-block: clamp(4rem, 9vw, 7.5rem);
+  }
+
+  .studio__grid {
+    display: grid;
+    gap: 3.5rem;
+  }
+
+  .studio__main {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    align-content: start;
+  }
+
+  .studio__title {
+    font-size: var(--step-3);
+  }
+
+  .studio__text {
+    max-width: 40ch;
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .services {
+    display: grid;
+    width: 100%;
+    margin: 0;
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .services li {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--line-on-ink);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.9375rem;
+  }
+
+  .studio__tech {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+
+  .tech {
+    margin: 0;
+    border-top: 1px solid var(--line-on-ink);
+  }
+
+  .tech div {
+    display: grid;
+    gap: 0.2rem;
+    padding-block: 0.95rem;
+    border-bottom: 1px solid var(--line-on-ink);
+  }
+
+  .tech dt {
+    color: var(--muted-on-ink);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .tech dd {
+    font-size: 1.0625rem;
+  }
+
+  @media (min-width: 900px) {
+    .studio__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+    }
+
+    .tech div {
+      grid-template-columns: 8.5rem 1fr;
+      align-items: baseline;
+      gap: 1rem;
+    }
+  }
+</style>

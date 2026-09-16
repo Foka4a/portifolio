@@ -1,0 +1,67 @@
+---
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@/styles/global.css';
+
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { htmlLang, useTranslations } from '@/i18n/utils';
+import type { Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Caminho equivalente no outro idioma (para o seletor PT/EN e hreflang). */
+  alternate: { pt: string; en: string };
+  image?: string;
+}
+
+const { lang, title, description, alternate, image = '/og.png' } = Astro.props;
+const t = useTranslations(lang);
+const pageTitle = title ? `${title} — Gabriel Somariva` : t('meta.title');
+const pageDescription = description ?? t('meta.description');
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+
+<!doctype html>
+<html lang={htmlLang[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="pt-BR" href={new URL(alternate.pt, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(alternate.en, Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(alternate.pt, Astro.site)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#0b0b0b" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'pt' ? 'pt_BR' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">{t('skip')}</a>
+    <Header lang={lang} alternate={alternate} />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+
+    <script>
+      import '@/scripts/reveal';
+    </script>
+  </body>
+</html>

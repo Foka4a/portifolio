@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout lang="pt" title="404" alternate={{ pt: '/', en: '/en/' }}>
+  <section class="nf on-ink">
+    <div class="container">
+      <p class="label">Erro 404 · Error 404</p>
+      <h1 class="display nf__title">Página não encontrada.</h1>
+      <p class="nf__en muted" lang="en">Page not found.</p>
+      <div class="nf__cta">
+        <a class="btn btn--solid" href="/">Voltar para o início</a>
+        <a class="btn btn--ghost" href="/en/" lang="en">Back to home</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: calc(100svh - var(--header-h) - 80px);
+    display: grid;
+    align-items: center;
+    padding-block: 4rem;
+  }
+
+  .nf__title {
+    margin-top: 1rem;
+    font-size: clamp(2.75rem, 1rem + 7vw, 7rem);
+  }
+
+  .nf__en {
+    margin-top: 0.75rem;
+    font-size: var(--step-1);
+  }
+
+  .nf__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+</style>

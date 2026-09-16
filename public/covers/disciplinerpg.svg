@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" fill="none" font-family="ui-monospace, monospace">
+  <rect width="1200" height="750" fill="#ecebe6"/>
+  <text x="70" y="96" fill="#0b0b0b" font-size="20" letter-spacing="4">02 / DISCIPLINERPG</text>
+  <text x="70" y="300" fill="#0b0b0b" font-size="150" font-weight="900" font-family="Archivo, system-ui, sans-serif">LV 12</text>
+  <text x="70" y="370" fill="#0b0b0b" font-size="20" letter-spacing="3">XP 2.340 / 3.000</text>
+  <rect x="70" y="400" width="1060" height="44" rx="22" stroke="#0b0b0b" stroke-width="3"/>
+  <rect x="78" y="408" width="810" height="28" rx="14" fill="#0b0b0b"/>
+  <g transform="translate(70 510)">
+    <text y="0" fill="#0b0b0b" font-size="16" letter-spacing="3">SEQUÊNCIA · 21 DIAS</text>
+    <g transform="translate(0 24)">
+      <rect x="0" width="40" height="40" rx="6" fill="#0b0b0b"/><rect x="50" width="40" height="40" rx="6" fill="#0b0b0b"/><rect x="100" width="40" height="40" rx="6" fill="#0b0b0b"/><rect x="150" width="40" height="40" rx="6" fill="#0b0b0b"/><rect x="200" width="40" height="40" rx="6" fill="#0b0b0b"/><rect x="250" width="40" height="40" rx="6" fill="#0b0b0b"/><rect x="300" width="40" height="40" rx="6" stroke="#0b0b0b" stroke-width="3"/>
+    </g>
+  </g>
+  <g transform="translate(700 500)" stroke="#0b0b0b" stroke-width="3">
+    <path d="M0 120 L80 90 L160 100 L240 50 L320 60 L430 0" stroke-width="5"/>
+    <path d="M0 120H430" opacity=".3"/>
+  </g>
+  <text x="70" y="700" fill="#0b0b0b" font-size="14" letter-spacing="3" opacity=".55">CAPA PROVISÓRIA — SUBSTITUIR POR SCREENSHOT</text>
+</svg>
